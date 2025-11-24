@@ -1,29 +1,108 @@
+import {useState, useEffect} from "react";
+import "./index.css"
 
-
-let messageCount = 0;
-function MessageRow({message}){
-  let messageDiv = "message" + messageCount++;
-  return (
-    <div className={messageDiv}>{message}</div>
-  )
+interface Message {
+  id?: number,
+  user: string,
+  message: string,
+  online: boolean
 }
 
-function ChatArea(chatMessages) {
+interface SendMessageProp{
+  onSend: (text: string) => void;
+}
+
+function SendMessageBox({ onSend }: SendMessageProp){
+  const [input, setInput] = useState("");
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    onSend(input);
+    setInput("");
+  }
   return (
-    <div className="chat-window">
-      <MessageRow message={chatMessages}/>
+    <div className="message-box">
+      <input
+      className="user-input"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleSend()}
+      />
+      <button onClick={handleSend}>Send</button>
     </div>
   )
 }
 
-function ChatRoomArea({chatMessages}) {
+interface MessageRowAreaProp {
+  message: Message;
+}
+
+let messageCount = 0;
+
+function MessageRow({ message }: MessageRowAreaProp) {
+  let messageDiv = "message" + messageCount++
   return (
-    //Returns ChatArea, OnlineUserList and SendMessageBox
+    <div className={messageDiv}>
+      <strong>{message.user}:&emsp;</strong>{message.message}
+    </div>
   )
 }
 
-const chatMessages = [{user: "hellbro", message:"hi", online: true}]
+interface ChatAreaProp{
+  chatMessages: Message[];
+}
 
-export default function App(){
-  return <ChatRoomArea chatMessages={chatMessages}/>
+function ChatArea({ chatMessages }: ChatAreaProp) {
+  return (
+      <div className="chat-window">
+        {chatMessages.map((m, i) => (
+          <MessageRow key={i} message={m} />
+        ))}
+      </div>
+  )
+}
+
+interface ChatRoomAreaProp {
+  chatMessages: Message[];
+  onSend: (text: string) => void;
+}
+
+function ChatRoomArea({ chatMessages, onSend }: ChatRoomAreaProp) {
+  return (
+    <div>
+      <ChatArea chatMessages={chatMessages}/>
+      <SendMessageBox onSend={onSend}/>
+    </div>
+  )
+}
+
+const chatHistory: Message[] = [{ user: "hellbro", message: "hi", online: true }]
+
+export default function App() {
+
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/messages")
+      .then((res) => res.json())
+      .then((data) => setChatMessages(data))
+      .catch((err) => console.error("Fetch error:", err));
+  }, []);
+
+  const sendMessageToAPI = async (text: string) => {
+    const res = await fetch("http://localhost:3000/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user: "hellbro",
+        message: text,
+        online: true,
+      }),
+    });
+    const newMessage = await res.json();
+
+    setChatMessages((prev) => [...prev, newMessage]);
+  };
+
+  return <ChatRoomArea chatMessages={chatMessages} onSend={sendMessageToAPI} />
 }
