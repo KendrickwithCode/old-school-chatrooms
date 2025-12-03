@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import "./index.css"
 
 interface Message {
@@ -8,11 +8,11 @@ interface Message {
   online: boolean
 }
 
-interface SendMessageProp{
+interface SendMessageProp {
   onSend: (text: string) => void;
 }
 
-function SendMessageBox({ onSend }: SendMessageProp){
+function SendMessageBox({ onSend }: SendMessageProp) {
   const [input, setInput] = useState("");
 
   const handleSend = () => {
@@ -21,14 +21,18 @@ function SendMessageBox({ onSend }: SendMessageProp){
     setInput("");
   }
   return (
-    <div className="message-box">
-      <input
-      className="user-input"
-      value={input}
-      onChange={(e) => setInput(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && handleSend()}
-      />
-      <button onClick={handleSend}>Send</button>
+    <div className="message-box row">
+      <div className="col-11">
+        <input
+          className="user-input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+        />
+      </div>
+      <div className="col-1">
+        <button onClick={handleSend}>Send</button>
+      </div>
     </div>
   )
 }
@@ -48,17 +52,50 @@ function MessageRow({ message }: MessageRowAreaProp) {
   )
 }
 
-interface ChatAreaProp{
+interface ChatAreaProp {
   chatMessages: Message[];
 }
 
 function ChatArea({ chatMessages }: ChatAreaProp) {
   return (
-      <div className="chat-window">
-        {chatMessages.map((m, i) => (
-          <MessageRow key={i} message={m} />
-        ))}
-      </div>
+    <div className="chat-window">
+      {chatMessages.map((m, i) => (
+        <MessageRow key={i} message={m} />
+      ))}
+    </div>
+  )
+}
+
+interface OnlineUserRowProp {
+  User: Message;
+}
+
+
+function OnlineUserRow({ User }: OnlineUserRowProp) {
+  return (
+    <div className="user">
+      <strong>{User.user}</strong>
+    </div>
+  )
+}
+
+function OnlineUserList({ chatMessages }: ChatAreaProp) {
+  const rows = []
+  const seen = new Set();
+  for (var i = 0; i < chatMessages.length; i++) {
+    const newUser = chatMessages[i];
+
+    if (!seen.has(newUser.user)) {
+      seen.add(newUser.user);
+      rows.push(newUser);
+    }
+  }
+  return (
+    <div className="online-window">
+      {rows.map((m) => (
+        <OnlineUserRow key={m.id} User={m} />
+      ))}
+    </div>
   )
 }
 
@@ -69,14 +106,19 @@ interface ChatRoomAreaProp {
 
 function ChatRoomArea({ chatMessages, onSend }: ChatRoomAreaProp) {
   return (
-    <div>
-      <ChatArea chatMessages={chatMessages}/>
-      <SendMessageBox onSend={onSend}/>
+    <div className="container">
+      <div className="row">
+        <div className="col-8">
+          <ChatArea chatMessages={chatMessages} />
+        </div>
+        <div className="col-4">
+          <OnlineUserList chatMessages={chatMessages} />
+        </div>
+          <SendMessageBox onSend={onSend} />
+      </div>
     </div>
   )
 }
-
-const chatHistory: Message[] = [{ user: "hellbro", message: "hi", online: true }]
 
 export default function App() {
 
