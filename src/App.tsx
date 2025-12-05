@@ -1,18 +1,8 @@
 import { useState, useEffect } from "react";
+import * as Types from "./types";
 import "./index.css"
 
-interface Message {
-  id?: number,
-  user: string,
-  message: string,
-  online: boolean
-}
-
-interface SendMessageProp {
-  onSend: (text: string) => void;
-}
-
-function SendMessageBox({ onSend }: SendMessageProp) {
+function SendMessageBox({ onSend }: Types.SendMessageProp) {
   const [input, setInput] = useState("");
 
   const handleSend = () => {
@@ -37,13 +27,9 @@ function SendMessageBox({ onSend }: SendMessageProp) {
   )
 }
 
-interface MessageRowAreaProp {
-  message: Message;
-}
-
 let messageCount = 0;
 
-function MessageRow({ message }: MessageRowAreaProp) {
+function MessageRow({ message }: Types.MessageRowAreaProp) {
   let messageDiv = "message" + messageCount++
   return (
     <div className={messageDiv}>
@@ -52,11 +38,7 @@ function MessageRow({ message }: MessageRowAreaProp) {
   )
 }
 
-interface ChatAreaProp {
-  chatMessages: Message[];
-}
-
-function ChatArea({ chatMessages }: ChatAreaProp) {
+function ChatArea({ chatMessages }: Types.ChatAreaProp) {
   return (
     <div className="chat-window">
       {chatMessages.map((m, i) => (
@@ -66,12 +48,7 @@ function ChatArea({ chatMessages }: ChatAreaProp) {
   )
 }
 
-interface OnlineUserRowProp {
-  User: Message;
-}
-
-
-function OnlineUserRow({ User }: OnlineUserRowProp) {
+function OnlineUserRow({ User }: Types.OnlineUserRowProp) {
   return (
     <div className="user">
       <strong>{User.user}</strong>
@@ -79,7 +56,7 @@ function OnlineUserRow({ User }: OnlineUserRowProp) {
   )
 }
 
-function OnlineUserList({ chatMessages }: ChatAreaProp) {
+function OnlineUserList({ chatMessages }: Types.ChatAreaProp) {
   const rows = []
   const seen = new Set();
   for (var i = 0; i < chatMessages.length; i++) {
@@ -99,12 +76,7 @@ function OnlineUserList({ chatMessages }: ChatAreaProp) {
   )
 }
 
-interface ChatRoomAreaProp {
-  chatMessages: Message[];
-  onSend: (text: string) => void;
-}
-
-function ChatRoomArea({ chatMessages, onSend }: ChatRoomAreaProp) {
+function ChatRoomArea({ chatMessages, onSend }: Types.ChatRoomAreaProp) {
   return (
     <div className="container">
       <div className="row">
@@ -122,7 +94,7 @@ function ChatRoomArea({ chatMessages, onSend }: ChatRoomAreaProp) {
 
 export default function App() {
 
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [chatMessages, setChatMessages] = useState<Types.Message[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:3000/messages")
