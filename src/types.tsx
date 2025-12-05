@@ -18,7 +18,7 @@ export interface ChatAreaProp {
 }
 
 export interface OnlineUserRowProp {
-  User: Message;
+  User: string;
 }
 
 export interface ChatRoomAreaProp {

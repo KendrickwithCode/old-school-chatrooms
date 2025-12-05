@@ -51,26 +51,19 @@ function ChatArea({ chatMessages }: Types.ChatAreaProp) {
 function OnlineUserRow({ User }: Types.OnlineUserRowProp) {
   return (
     <div className="user">
-      <strong>{User.user}</strong>
+      <strong>{User}</strong>
     </div>
   )
 }
 
 function OnlineUserList({ chatMessages }: Types.ChatAreaProp) {
-  const rows = []
-  const seen = new Set();
-  for (var i = 0; i < chatMessages.length; i++) {
-    const newUser = chatMessages[i];
 
-    if (!seen.has(newUser.user)) {
-      seen.add(newUser.user);
-      rows.push(newUser);
-    }
-  }
+  //Get all unique usernames 
+  const distinctUsernames = [...new Set(chatMessages.map(item => item.user))]
   return (
     <div className="online-window">
-      {rows.map((m) => (
-        <OnlineUserRow key={m.id} User={m} />
+      {distinctUsernames.map((m, i) => (
+        <OnlineUserRow key={i} User={m} />
       ))}
     </div>
   )
