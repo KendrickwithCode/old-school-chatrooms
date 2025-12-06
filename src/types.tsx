@@ -1,27 +1,31 @@
 export type Message = {
-  id?: number,
-  user: string,
-  message: string,
-  online: boolean
+    id?: number,
+    user: string,
+    message: string,
+    online: boolean
 }
 
 export type SendMessageProp = {
-  onSend: (text: string) => void;
+    onSend: (text: string) => void;
 }
 
 export type MessageRowAreaProp = {
-  message: Message;
+    message: Message;
 }
 
 export interface ChatAreaProp {
-  chatMessages: Message[];
+    chatMessages: Message[];
 }
 
 export interface OnlineUserRowProp {
-  User: string;
+    User: string;
 }
 
 export interface ChatRoomAreaProp {
-  chatMessages: Message[];
-  onSend: (text: string) => void;
+    chatMessages: Message[];
+    onSend: (text: string) => void;
+}
+
+export type LoginFormProp = {
+    onLogin: (name: string) => void;
 }

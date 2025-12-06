@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import * as Types from "./types";
 import "./index.css"
+import {LoginForm} from "./Login";
 
 function SendMessageBox({ onSend }: Types.SendMessageProp) {
   const [input, setInput] = useState("");
@@ -87,6 +88,8 @@ function ChatRoomArea({ chatMessages, onSend }: Types.ChatRoomAreaProp) {
 
 export default function App() {
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState<string>("");
   const [chatMessages, setChatMessages] = useState<Types.Message[]>([]);
 
   useEffect(() => {
@@ -101,7 +104,7 @@ export default function App() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        user: "hellbro",
+        user: userName,
         message: text,
         online: true,
       }),
@@ -111,5 +114,8 @@ export default function App() {
     setChatMessages((prev) => [...prev, newMessage]);
   };
 
+  if (!isLoggedIn){
+    return <LoginForm onLogin={(name) => {setUserName(name); setIsLoggedIn(true);}}/>
+  }
   return <ChatRoomArea chatMessages={chatMessages} onSend={sendMessageToAPI} />
 }
